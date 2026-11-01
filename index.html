@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PC INSIDE</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f5f5f5;
+  color: #171717;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 22px 7%;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  font-size: 23px;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+header span {
+  font-weight: normal;
+}
+
+.hero {
+  padding: 55px 7% 25px;
+}
+
+.hero small {
+  letter-spacing: 3px;
+  color: #777;
+}
+
+h1 {
+  font-size: 45px;
+  margin: 15px 0;
+}
+
+.hero p {
+  color: #777;
+  line-height: 1.6;
+}
+
+.model {
+  margin: 20px auto;
+  width: 90%;
+  max-width: 900px;
+  height: 400px;
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+.content {
+  padding: 25px 7%;
+}
+
+.content h2 {
+  font-size: 27px;
+}
+
+.parts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.part {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  color: #171717;
+}
+
+.part:active, .part.active {
+  background: #171717;
+  color: white;
+}
+
+.part b {
+  display: block;
+  margin-bottom: 7px;
+}
+
+.info {
+  margin-top: 22px;
+  padding: 25px;
+  background: white;
+  border-radius: 15px;
+  min-height: 180px;
+}
+
+.info p {
+  color: #666;
+  line-height: 1.7;
+}
+
+footer {
+  text-align: center;
+  padding: 35px;
+  color: #888;
+  font-size: 12px;
+}
+
+@media(max-width:500px) {
+  h1 {font-size: 34px;}
+  .model {height: 330px;}
+}
+</style>
+</head>
+
+<body>
+
+<header>PC <span>INSIDE</span></header>
+
+<section class="hero">
+  <small>INTERACTIVE COMPUTER LAB</small>
+  <h1>Компьютердің<br>ішкі әлемі.</h1>
+  <p>
+    Жүйелік блоктың құрылысын зертте.
+    3D модельді айналдырып, бөлшектерін таңда.
+  </p>
+</section>
+
+<div class="model">
+  <canvas id="computer"></canvas>
+</div>
+
+<section class="content">
+  <h2>Компоненттер</h2>
+  <p>Зерттегің келетін бөлшекті таңда:</p>
+
+  <div class="parts" id="parts"></div>
+
+  <div class="info">
+    <small>COMPONENT INFORMATION</small>
+    <h2 id="title">Аналық тақша</h2>
+    <p id="description">
+      Компьютердің барлық негізгі бөлшектерін біріктіретін басты тақша.
+    </p>
+  </div>
+</section>
+
+<footer>PC INSIDE © 2026 · COMPUTER EDUCATION</footer>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from
+'three/addons/controls/OrbitControls.js';
+
+const canvas = document.querySelector('#computer');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf5f5f5);
+
+const camera = new THREE.PerspectiveCamera(
+  45, 1, 0.1, 100
+);
+camera.position.set(7, 5, 8);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  antialias: true
+});
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio, 2)
+);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.target.set(0, 1.5, 0);
+
+scene.add(new THREE.AmbientLight(0xffffff, 2));
+
+const light = new THREE.DirectionalLight(0xffffff, 3);
+light.position.set(5, 8, 5);
+scene.add(light);
+
+const objects = [];
+
+function box(name, x, y, z, w, h, d, color) {
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(w, h, d),
+    new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.55
+    })
+  );
+
+  mesh.position.set(x, y, z);
+  mesh.userData.name = name;
+  scene.add(mesh);
+  objects.push(mesh);
+  return mesh;
+}
+
+// SYSTEM UNIT CASE
+
+box('Корпус', 0, 1.5, 0, 4, 3.5, 2.5, 0x292929);
+
+// MOTHERBOARD
+
+box('Аналық тақша', 0, 1.7, -1.1, 3.3, 2.7, 0.12, 0x59645d);
+
+// CPU
+
+box('Процессор', 0, 2.3, -0.85, 0.8, 0.8, 0.18, 0xbdbdbd);
+
+// RAM
+
+box('Жедел жад', 1, 2.3, -0.8, 0.2, 1.1, 0.15, 0xeeeeee);
+
+// GPU
+
+box('Бейне карта', 0, 0.9, -0.6, 2.8, 0.5, 0.7, 0x777777);
+
+// POWER SUPPLY
+
+box('Қуат көзі', 1.1, 0.3, -0.9, 1.5, 0.5, 1.3, 0x444444);
+
+// SSD
+
+box('SSD жинақтауышы', -1, 0.3, 0.6, 1, 0.2, 0.7, 0xbdbdbd);
+
+// HDD
+
+box('Қатты диск', 0, 0.3, 0.6, 0.9, 0.3, 0.7, 0x777777);
+
+// FAN
+
+const fan = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.4, 0.4, 0.15, 32),
+  new THREE.MeshStandardMaterial({color: 0xeeeeee})
+);
+
+fan.position.set(-1.5, 2.7, -0.6);
+scene.add(fan);
+fan.userData.name = 'Салқындатқыш';
+objects.push(fan);
+
+// INTERACTION
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+canvas.addEventListener('click', event => {
+  const rect = canvas.getBoundingClientRect();
+
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(pointer, camera);
+
+  const hits = raycaster.intersectObjects(objects);
+
+  if (hits.length) {
+    showInfo(hits[0].object.userData.name);
+  }
+});
+
+// COMPONENTS
+
+const data = {
+  'Аналық тақша':
+  'Компьютердің барлық бөлшектерін байланыстырады. Басқа құрылғылар осы тақшаға қосылады.',
+
+  'Процессор':
+  'Компьютердің негізгі есептеу құрылғысы. Ақпаратты өңдеп, командаларды орындайды.',
+
+  'Жедел жад':
+  'Компьютер жұмыс істеп тұрған кезде қажетті ақпаратты уақытша сақтайды.',
+
+  'Бейне карта':
+  'Графикалық ақпаратты өңдеп, кескіндерді мониторға шығаруға көмектеседі.',
+
+  'Қуат көзі':
+  'Компьютердің барлық бөлшектерін электр энергиясымен қамтамасыз етеді.',
+
+  'SSD жинақтауышы':
+  'Ақпаратты жылдам сақтайтын құрылғы. Файлдар мен бағдарламаларды сақтайды.',
+
+  'Қатты диск':
+  'Ақпаратты магниттік пластиналарда ұзақ уақыт сақтайды.',
+
+  'Салқындатқыш':
+  'Компьютердің ішіндегі температураны төмендетуге көмектеседі.'
+};
+
+function showInfo(name) {
+  document.querySelector('#title').textContent = name;
+  document.querySelector('#description').textContent =
+    data[name] || 'Компьютер корпусының бөлігі.';
+}
+
+// BUTTONS
+
+const list = document.querySelector('#parts');
+
+Object.keys(data).forEach(name => {
+  const button = document.createElement('button');
+  button.className = 'part';
+  button.innerHTML = `<b>${name}</b>Толығырақ оқу`;
+
+  button.onclick = () => showInfo(name);
+
+  list.appendChild(button);
+});
+
+// RESIZE
+
+function resize() {
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+new ResizeObserver(resize).observe(canvas);
+resize();
+
+// ANIMATION
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+
+</body>
+</html>
